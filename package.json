@@ -1,0 +1,21 @@
+{
+    "name": "lpd",
+    "version": "0.0.1",
+    
+    "description": "Client (and later also server) library for the Line Printer Daemon protocol",
+    "url": "https://github.com/andrewschaaf/node-lpd",
+    
+    "main": "build/lpd.js",
+    
+    "dependencies": {
+      "tafa-misc-util": ">=0.0.1"
+    },
+    
+    "author": "Andrew Schaaf <andrew@andrewschaaf.com>",
+    "license": "MIT",
+    
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/andrewschaaf/node-lpd.git"
+    }
+}
