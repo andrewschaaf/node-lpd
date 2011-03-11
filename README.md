@@ -14,7 +14,7 @@ tsp100 = require('<a href="https://github.com/shopkeep/lpd-printers">lpd-printer
 
 lpd.client.sendJob(
               '192.168.0.123',
-              tsp100.controlFileForP4(pbm_p4),
+              tsp100.controlFile,
               tsp100.dataFileForP4(pbm_p4),
               {},
               function(err){...});
