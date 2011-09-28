@@ -1,5 +1,9 @@
 
+names = [
+  'client'
+  'server'
+]
 
-module.exports =
-  client: require './client'
-
+for name in names
+  for own k, v of require "./#{name}"
+    exports[k] = v

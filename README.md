@@ -1,29 +1,42 @@
 
+## Limitations
 
-# Client
+I've only implemented the tiny subset of LPD that I've needed. Pull requests welcome.
 
-## lpd.client.sendJob
+
+## LPDServer
 <pre>
-lpd.client.sendJob host, controlFile, dataFile, options, (e) ->
+{LPDServer} = require 'lpd'
 
-options:
-  debug:      // (default: false)
-  jobDigits:  // (default: random) 3-digit job number string
-  jobHost:    // (default: random token)
+server = new LPDServer
+server.listen PORT, () -> console.log "Listening on #{PORT}..."
+server.on 'job', ({controlFile, dataFile}) ->
 </pre>
 
 
-## Client Example
+## sendLPDJob
 <pre>
-lpd = require 'lpd' 
+{sendLPDJob} = require 'lpd'
+
+sendJob {
+  host:         "..."
+  controlFile:  ...Buffer...
+  dataFile:     ...Buffer...
+  515:          # default: 515
+  verbose:      # default: false
+  jobDigits:    # default: random 3-digit job number string
+  jobHost:      # default: random token
+}, (e) ->
+</pre>
+
+
+#### Example
+<pre>
+{sendLPDJob} = require 'lpd' 
 {tsp100} = require '<a href="https://github.com/shopkeep/lpd-printers">lpd-printers</a>'
-
-<a href="http://en.wikipedia.org/wiki/Netpbm_format">pbm_p4</a> = new Buffer [...]
-
-lpd.client.sendJob(
-              '192.168.0.123',
-              tsp100.controlFile,
-              tsp100.dataFileForP4(pbm_p4),
-              {},
-              ((err)->))
+sendLPDJob {
+  host: '192.168.0.123'
+  controlFile: tsp100.controlFile,
+  dataFile: tsp100.dataFileForP4(<a href="http://en.wikipedia.org/wiki/Netpbm_format">pbm_p4</a>),
+}, (e) ->
 </pre>

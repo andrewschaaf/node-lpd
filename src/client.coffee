@@ -1,64 +1,44 @@
 
 net = require 'net'
+async = require 'async'
 {joinBuffers, randomToken} = require 'tafa-misc-util'
 
 
-
-exports.sendJob = sendJob = (host, controlFile, dataFile, opt, callback) ->
+sendLPDJob = ({host, controlFile, dataFile, port, verbose, jobCode, jobHost}, callback=(->)) ->
   
-  debug = opt.debug or false
-  jobCode = opt.jobCode or randomToken 3, '123456789'
-  jobHost = opt.jobCode or randomToken 8
-  
+  port    or= 515
+  jobCode or= randomToken 3, '123456789'
+  jobHost or= randomToken 8
   if (typeof controlFile) == 'function'
     controlFile = controlFile jobCode, jobHost
   
-  socket = net.createConnection 515, host
+  queue = ""
   
-  _send = ([debug_msg, msg_data], callback) ->
-    if debug
-      console.log "Sending #{debug_msg}"
-    socket.write msg_data
+  socket = net.createConnection port, host
+  
+  _sendAndGetAck = ([description, data], callback) ->
+    console.log "[sendLPDJob] #{description}"               if verbose
+    console.log "[sendLPDJob] (#{data.length} bytes sent)"  if verbose
+    socket.write data
     socket.on 'data', (data) ->
       socket.removeListener 'data', arguments.callee
-      data64 = data.toString('base64')
-      if data64 != 'AA=='
-        throw new Error "LPD server responded with error: #{data64}"
-      if debug
-        console.log "Got ack for #{debug_msg}"
-      callback()
-  
-  steps = [
-    ['command: receive_printer_job',      receive_printer_job()]
-    ['subcommand: receive_control_file',  receive_control_file(controlFile.length, jobCode, jobHost)]
-    ['...data...',                        joinBuffers([controlFile, new Buffer [0]])]
-    ['subcommand: receive_data_file',     receive_data_file(dataFile.length, jobCode, jobHost)]
-    ['...data...',                        joinBuffers([dataFile, new Buffer [0]])]
-  ]
+      return callback(new Error "Error response.") if not (data.length == 1 and data[0] == 0)
+      console.log "[sendLPDJob] Got ack." if verbose
+      callback null
   
   socket.on 'connect', () ->
-    _send steps[0], () ->
-      _send steps[1], () ->
-        _send steps[2], () ->
-          _send steps[3], () ->
-            _send steps[4], () ->
-              socket.end()
-              socket.destroy()
-              callback()
+    async.forEachSeries [
+      # Note: the wording is from the server's POV
+      ["Command: receive_printer_job",      new Buffer "\x02#{queue}\n"]
+      ['Subcommand: receive_control_file',  new Buffer "\x02#{controlFile.length} cfA#{jobCode}#{jobHost}\n"]
+      ['...data...',                        joinBuffers [controlFile, new Buffer [0]]]
+      ['Subcommand: receive_data_file',     new Buffer "\x03#{dataFile.length} dfA#{jobCode}#{jobHost}\n"]
+      ['...data...',                        joinBuffers([dataFile, new Buffer [0]])]
+    ], _sendAndGetAck, (e) ->
+      socket.end()
+      socket.destroy()
+      callback e
 
 
-#### Commands
-# (wording from server's POV)
-
-receive_printer_job = (queue="") -> new Buffer "\x02#{queue}\n"
-
-#### Subcommands
-
-abort_job = () -> new Buffer "\x01\n"
-
-receive_control_file = (size, jobcode, jobhost) ->
-  new Buffer "\x02#{size} cfA#{jobcode}#{jobhost}\n"
-
-receive_data_file = (size, jobcode, jobhost) ->
-  new Buffer "\x03#{size} dfA#{jobcode}#{jobhost}\n"
-
+module.exports =
+  sendLPDJob: sendLPDJob

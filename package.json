@@ -8,7 +8,8 @@
     "main": "lib/lpd.js",
     
     "dependencies": {
-      "tafa-misc-util": ">=0.0.1"
+      "tafa-misc-util": ">=0.1.6",
+      "async": ">=0.1.9"
     },
     
     "author": "Andrew Schaaf <andrew@andrewschaaf.com>",
