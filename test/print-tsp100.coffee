@@ -1,6 +1,6 @@
 
 fs = require 'fs'
-lpd = require 'lpd'
+lpd = require './src/lpd'
 
 host = '192.168.0.199'
 controlFile = fs.readFileSync 'sample-control-tsp100'
