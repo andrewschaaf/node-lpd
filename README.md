@@ -1,34 +1,29 @@
 
-## Installing
+
+# Client
+
+## lpd.client.sendJob
 <pre>
-npm install lpd
+lpd.client.sendJob host, controlFile, dataFile, options, (e) ->
+
+options:
+  debug:      // (default: false)
+  jobDigits:  // (default: random) 3-digit job number string
+  jobHost:    // (default: random token)
 </pre>
 
 
 ## Client Example
 <pre>
-lpd = require('lpd');
-tsp100 = require('<a href="https://github.com/shopkeep/lpd-printers">lpd-printers</a>').tsp100;
+lpd = require 'lpd' 
+{tsp100} = require '<a href="https://github.com/shopkeep/lpd-printers">lpd-printers</a>'
 
-<a href="http://en.wikipedia.org/wiki/Netpbm_format">pbm_p4</a> = new Buffer([...]);
+<a href="http://en.wikipedia.org/wiki/Netpbm_format">pbm_p4</a> = new Buffer [...]
 
 lpd.client.sendJob(
               '192.168.0.123',
               tsp100.controlFile,
               tsp100.dataFileForP4(pbm_p4),
               {},
-              function(err){...});
-</pre>
-
-## Usage
-
-### lpd.client.sendJob
-
-<pre>
-lpd.client.sendJob(host, controlFile, dataFile, options, callback)
-
-options:
-  debug      // (default: false)
-  jobDigits  // (default: random) 3-digit job number string
-  jobHost    // (default: random token)
+              ((err)->))
 </pre>
