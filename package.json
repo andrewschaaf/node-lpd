@@ -1,8 +1,8 @@
 {
     "name": "lpd",
-    "version": "0.1.0",
+    "version": "0.1.1",
     
-    "description": "Client (and later also server) library for the Line Printer Daemon protocol",
+    "description": "{LPDServer, sendLPDJob} for the Line Printer Daemon protocol",
     "url": "https://github.com/andrewschaaf/node-lpd",
     
     "main": "lib/lpd.js",
