@@ -22,7 +22,7 @@ sendJob {
   host:         "..."
   controlFile:  ...Buffer...
   dataFile:     ...Buffer...
-  515:          # default: 515
+  port:         # default: 515
   verbose:      # default: false
   jobDigits:    # default: random 3-digit job number string
   jobHost:      # default: random token
